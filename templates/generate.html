@@ -84,7 +84,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
         .container {
             max-width: 600px;
@@ -104,15 +104,19 @@
             flex-direction: column;
             align-items: center;
         }
-        input[type="file"] {
+        input[type="file"],
+        input[type="url"] {
             padding: 12px;
             margin-bottom: 20px;
             border: 2px solid #ccc;
             border-radius: 8px;
             background-color: #f9f9f9;
             font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        input[type="file"]:focus {
+        input[type="file"]:focus,
+        input[type="url"]:focus {
             outline: none;
         }
         input[type="submit"] {
@@ -124,6 +128,8 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
         }
         input[type="submit"]:hover {
             background: linear-gradient(135deg, #dd2476, #ff512f);
@@ -157,25 +163,30 @@
 </head>
 <body>
     <div class="container">
-        <h1>Video Upload</h1>
-        <form id="uploadForm" action="{{url_for('generateSummary')}}" method="post" enctype="multipart/form-data">
+        <h1>GET Narration - Commentary</h1>
+        <form id="uploadForm1" action="{{url_for('generateSummary')}}" method="post" enctype="multipart/form-data">
             <input type="file" name="video" accept=".mp4" required>
-            <input type="submit" value="Upload" id="uploadButton">
+            <input type="submit" value="Upload" id="uploadButton1">
+        </form>
+        <br>
+        <form id="uploadForm2" action="{{url_for('generateSummaryYT')}}" method="post">
+            <input type="url" name="videoURL" placeholder="YouTube Video URL" required>
+            <input type="submit" value="Upload" id="uploadButton2">
         </form>
         <div class="loading" id="loadingMessage">
             <div class="loader"></div>
             Generating narration...
         </div>
     </div>
-
+    
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', function() {
+        document.getElementById('uploadForm1').addEventListener('submit', function() {
+            document.getElementById('loadingMessage').classList.add('active');
+        });
+    
+        document.getElementById('uploadForm2').addEventListener('submit', function() {
             document.getElementById('loadingMessage').classList.add('active');
         });
     </script>
 </body>
-</html>
-
-
-
-
+</html> 

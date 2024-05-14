@@ -4,7 +4,11 @@ import requests
 import base64
 from moviepy.editor import *
 import json
+from pytube import YouTube
+import os
 import cv2
+
+
 
 # Approximation: 1 second = 30 frames
 # Approximation: 1 frame = 760 tokens
@@ -61,8 +65,8 @@ def generate_script_gemini(base64Frames):
     ]
 
     model = genai.GenerativeModel(model_name="gemini-pro-vision",
-                                  generation_config=generation_config,
-                                  safety_settings=safety_settings
+                                  generation_config=generation_config
+                                #   safety_settings=safety_settings
                                 )
 
     image_parts = [
@@ -73,13 +77,13 @@ def generate_script_gemini(base64Frames):
     ]
 
     prompt_parts = [
-        {"text": "These are frames of a video. Create a short voiceover script by a commentator as if it was a live match. Note: Only include the narration & do not include timestamp.Striclty upto 50 words only."},
+        {"text": "These are frames of a video. Create a short voiceover script by a commentator as if it was a live match. Note: Only include the narration & do not include timestamp. Striclty upto 50 words only."},
     ] + image_parts
 
     response = model.generate_content(prompt_parts)
     return response.text
 
-def generate_audio(script):
+def generate_audio(script): 
     with open("config.json", 'r') as f:
         config = json.load(f)
         credentials = config['params']
@@ -126,6 +130,16 @@ def add_voiceover(audio_path, video_path):
 
     video_clip.write_videofile("static\\videos\\result.mp4", codec="libx264", audio_codec="aac")
 
-
-def video_transcript(video_path):
-    pass
+def download_youtube_video(youtube_url, output_path = "static\\videos"):
+    try:
+        yt = YouTube(youtube_url)
+        stream = yt.streams.get_highest_resolution()
+        output_file = os.path.join(output_path, "input.mp4")
+        if os.path.exists(output_file):
+            os.remove(output_file)  # Remove existing file
+        stream.download(output_path)
+        stream.download(output_path)
+        os.rename(os.path.join(output_path, stream.default_filename), output_file)
+        print("Download completed successfully!")
+    except Exception as e:
+        print("Error:", str(e))

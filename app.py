@@ -27,6 +27,20 @@ def generateSummary():
     add_voiceover(audio_path, video_path)
     return render_template('preview.html', video="result.mp4", audio = "voiceover.wav")
 
+@app.route('/generateSummaryYT', methods=['POST'])
+def generateSummaryYT():
+    # Handle YouTube video link
+    video_url = request.form.get('videoURL')
+    # Process the YouTube video link
+    download_youtube_video(video_url)
+    video_path = "static/videos/input.mp4"
+    base64_frames = video_to_base64(video_path)
+    script = generate_script_gemini(base64_frames)
+    print(script)
+    audio_path = generate_audio(script)
+    add_voiceover(audio_path, video_path)
+    return render_template('preview.html', video="result.mp4", audio = "voiceover.wav")
+
 @app.route('/hello')
 def hello():
     return 'Hello, World!'
